@@ -15,7 +15,14 @@ public class LoggingInterceptor : IInterceptor
         //_logger.LogDebug($"Calling method {invocation.TargetType}.{invocation.Method.Name}.");
         
         _logger.LogInformation("LoggingInterceptor: Before target call");
-        invocation.Proceed();
-        _logger.LogInformation("LoggingInterceptor: After target call");
+        try
+        {
+            invocation.Proceed();
+        }
+        finally
+        {
+            _logger.LogInformation("LoggingInterceptor: After target call");    
+        }
+        
     }
 }
