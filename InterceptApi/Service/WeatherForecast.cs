@@ -1,4 +1,4 @@
-namespace InterceptApi;
+namespace InterceptApi.Service;
 
 public class WeatherForecast
 {

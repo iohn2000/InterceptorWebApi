@@ -1,3 +1,4 @@
+using InterceptApi.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InterceptApi.Controllers;
@@ -6,29 +7,20 @@ namespace InterceptApi.Controllers;
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
 
+    private readonly IWeatherService _theWeather;
     private readonly ILogger<WeatherForecastController> _logger;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherService theWeather)
     {
         _logger = logger;
-        _logger.LogDebug("in ctor");
+        _theWeather = theWeather;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    public IEnumerable<WeatherForecast> Get([FromQuery]int z1, [FromQuery]int z2)
     {
-        _logger.LogDebug("in get()");
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+        _logger.LogDebug("in controller get()");
+        return _theWeather.Get(z1,z2);
     }
 }
