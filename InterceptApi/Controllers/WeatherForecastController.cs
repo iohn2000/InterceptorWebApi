@@ -21,6 +21,6 @@ public class WeatherForecastController : ControllerBase
     public IEnumerable<WeatherForecast> Get([FromQuery]int z1, [FromQuery]int z2)
     {
         _logger.LogDebug("in controller get()");
-        return _theWeather.Get(z1,z2);
+        return _theWeather.GetTemperature(z1,z2);
     }
 }

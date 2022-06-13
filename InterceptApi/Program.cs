@@ -1,26 +1,43 @@
 using Castle.DynamicProxy;
-using InterceptApi;
-using InterceptApi.Controllers;
+using InterceptApi.Filters;
 using InterceptApi.Interceptors;
 using InterceptApi.Service;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// add filter for dependency injection
+builder.Services.AddScoped<MyControllerLoggingFilter>();
 
+// castle core proxy generator needed to create proxy (interceptor) classes at runtime
+builder.Services.AddSingleton(new ProxyGenerator());
+
+//builder.Services.AddScoped<IExceptionFilter, MyExceptionFilter>();
+//builder.Services.AddScoped<IInterceptor, ExceptionInterceptor>();
+
+builder.Services.AddScoped<IInterceptor, MyClassesLoggingInterceptor>();
+builder.Services.AddScoped<IActionFilter, MyControllerLoggingFilter>();
+
+//
+// add all proxy (interceptor) classes of type IInterceptor to WeatherService
+//
+//builder.Services.AddProxiedScoped<IWeatherService, WeatherService>();
+
+//
+// add a single specific IInterceptor to WeatherService
+//
+builder.Services.AddInterceptedScoped<IWeatherService, WeatherService, MyClassesLoggingInterceptor>();
 
 // Add services to the container.
+builder.Services.AddControllers(c =>
+{
+    c.Filters.Add(typeof(MyExceptionFilter)); // exception filter here is added to all controllers and all actions
+});
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
-builder.Services.AddSingleton(new ProxyGenerator());
-builder.Services.AddScoped<IInterceptor, ExceptionInterceptor>();
-builder.Services.AddScoped<IInterceptor, LoggingInterceptor>();
-builder.Services.AddProxiedScoped<IWeatherService, WeatherService>();
 
 var app = builder.Build();
 
@@ -32,11 +49,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
 
 public static class ServicesExtensions
@@ -55,17 +69,17 @@ public static class ServicesExtensions
         });
     }
     
-    public static void AddIngterceptedSingleton<TInterface, TImplementation, TInterceptor>
+    public static void AddInterceptedScoped<TInterface, TImplementation, TInterceptor>
         (this IServiceCollection services)
         where TInterface : class
         where TImplementation : class, TInterface
         where TInterceptor : class, IInterceptor
     {
-        services.TryAddSingleton<IProxyGenerator, ProxyGenerator>();
-        services.AddSingleton<TImplementation>();
+        //services.TryAddScoped<IProxyGenerator, ProxyGenerator>();
+        services.AddScoped<TImplementation>();
         services.TryAddTransient<TInterceptor>();
         
-        services.AddSingleton(provider =>
+        services.AddScoped(typeof(TInterface), provider =>
         {
             var proxyGenerator = provider.GetRequiredService<ProxyGenerator>();
             var impl = provider.GetRequiredService<TImplementation>();
