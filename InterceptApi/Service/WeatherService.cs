@@ -21,15 +21,21 @@ public class WeatherService : IWeatherService
             saveTemperature = Enumerable.Range(1, 5).Select(index => new WeatherForecast
                 {
                     Date = DateTime.Now.AddDays(index),
-                    TemperatureC = z1/z2, 
+                    TemperatureC = z1 / z2,
                     Summary = Summaries[Random.Shared.Next(Summaries.Length)]
                 })
                 .ToList();
+        }
+        catch (DivideByZeroException divZero)
+        {
+            _logger.LogError("division by zero in the save method catched");
+            saveTemperature = new List<WeatherForecast>();
         }
         catch (Exception e)
         {
             // dont re throw, handles internally
             _logger.LogError("catched exception in service class");
+            saveTemperature = new List<WeatherForecast>();
         }
         return saveTemperature;
     }

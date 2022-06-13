@@ -6,18 +6,23 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// add filter for dependency injection
-builder.Services.AddScoped<MyControllerLoggingFilter>();
-
+//
 // castle core proxy generator needed to create proxy (interceptor) classes at runtime
+//
 builder.Services.AddSingleton(new ProxyGenerator());
 
-//builder.Services.AddScoped<IExceptionFilter, MyExceptionFilter>();
+//
+// add filter implementations for dependency injection
+//
+builder.Services.AddScoped<MyControllerLoggingFilter>();
+builder.Services.AddScoped<MyExceptionFilter>();
+
+
 //builder.Services.AddScoped<IInterceptor, ExceptionInterceptor>();
 
 builder.Services.AddScoped<IInterceptor, MyClassesLoggingInterceptor>();
 builder.Services.AddScoped<IActionFilter, MyControllerLoggingFilter>();
+
 
 //
 // add all proxy (interceptor) classes of type IInterceptor to WeatherService
@@ -32,7 +37,7 @@ builder.Services.AddInterceptedScoped<IWeatherService, WeatherService, MyClasses
 // Add services to the container.
 builder.Services.AddControllers(c =>
 {
-    c.Filters.Add(typeof(MyExceptionFilter)); // exception filter here is added to all controllers and all actions
+    //c.Filters.Add(typeof(MyExceptionFilter)); // exception filter here is added to all controllers and all actions
 });
 
 
