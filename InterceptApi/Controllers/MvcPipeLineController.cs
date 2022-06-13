@@ -3,9 +3,11 @@ using InterceptApi.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InterceptApi.Controllers;
-
+/*
+ // filter here is added on a per controller (for all actions in controller) basis as Attribute, also works before single actions functions!
 [ServiceFilter(typeof(MyExceptionFilter))]
-[ServiceFilter(typeof(MyControllerLoggingFilter))] // filter here is added on a per controller (for all actions in controller) basis as Attribute, also works before single actions!
+[ServiceFilter(typeof(MyControllerLoggingFilter))] 
+*/
 [ApiController]
 [Route("[controller]")]
 public class MvcPipeLineController : ControllerBase

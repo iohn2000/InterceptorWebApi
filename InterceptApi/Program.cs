@@ -2,23 +2,10 @@ using Castle.DynamicProxy;
 using InterceptApi.Filters;
 using InterceptApi.Interceptors;
 using InterceptApi.Service;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-//
-// add filter implementations for dependency injection
-//
-builder.Services.AddScoped<MyControllerLoggingFilter>();
-builder.Services.AddScoped<MyExceptionFilter>();
-
-
-//builder.Services.AddScoped<IInterceptor, ExceptionInterceptor>();
-
-builder.Services.AddScoped<IInterceptor, MyClassesLoggingInterceptor>();
-builder.Services.AddScoped<IActionFilter, MyControllerLoggingFilter>();
 
 #region Interceptor Registration for Commands, Repository classes
 
@@ -26,22 +13,31 @@ builder.Services.AddScoped<IActionFilter, MyControllerLoggingFilter>();
     // castle core proxy generator needed to create proxy (interceptor) classes at runtime
     //
     builder.Services.AddSingleton(new ProxyGenerator());
+    builder.Services.AddScoped<IInterceptor, MyClassesLoggingInterceptor>();
+    //builder.Services.AddScoped<IInterceptor, ExceptionInterceptor>(); // another test interceptor for exceptions
+
+    //
+    // add a single specific IInterceptor to WeatherService (logging)
+    //
+    builder.Services.AddInterceptedScoped<IWeatherService, WeatherService, MyClassesLoggingInterceptor>();
+
     //
     // add all proxy (interceptor) classes of type IInterceptor to WeatherService
     //
     //builder.Services.AddProxiedScoped<IWeatherService, WeatherService>();
 
-    //
-    // add a single specific IInterceptor to WeatherService
-    //
-    builder.Services.AddInterceptedScoped<IWeatherService, WeatherService, MyClassesLoggingInterceptor>();
-
 #endregion
 
-// Add services to the container.
-builder.Services.AddControllers(c =>
+//
+// add filter implementations for dependency injection
+//
+builder.Services.AddScoped<MyControllerLoggingFilter>();
+builder.Services.AddScoped<MyExceptionFilter>();
+
+builder.Services.AddControllers(s =>
 {
-    //c.Filters.Add(typeof(MyExceptionFilter)); // exception filter here is added to all controllers and all actions
+    s.Filters.Add(typeof(MyExceptionFilter)); // exception filter here is added to all controllers and all actions
+    s.Filters.Add(typeof(MyControllerLoggingFilter)); // exception filter here is added to all controllers and all actions
 });
 
 

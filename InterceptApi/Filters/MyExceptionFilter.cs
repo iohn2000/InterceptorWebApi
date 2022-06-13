@@ -5,9 +5,9 @@ namespace InterceptApi.Filters;
 
 public class MyExceptionFilter : ExceptionFilterAttribute //, IExceptionFilter
 {
-    private readonly ILogger<MyControllerLoggingFilter> _logger;
+    private readonly ILogger<MyExceptionFilter> _logger;
 
-    public MyExceptionFilter(ILogger<MyControllerLoggingFilter> logger)
+    public MyExceptionFilter(ILogger<MyExceptionFilter> logger)
     {
         _logger = logger;
     }
