@@ -28,14 +28,16 @@ public class WeatherService : IWeatherService
         }
         catch (DivideByZeroException divZero)
         {
-            _logger.LogError("division by zero in the save method catched");
-            saveTemperature = new List<WeatherForecast>();
+            string divisionByZeroInTheSaveMethodCatched = "division by zero in the save method catched";
+            _logger.LogError(divisionByZeroInTheSaveMethodCatched);
+            throw new MyKbcException(divisionByZeroInTheSaveMethodCatched, divZero, "mykbc/call_SAVE_TEMP_Zero_Div");
+
         }
         catch (Exception e)
         {
-            // dont re throw, handles internally
-            _logger.LogError("catched exception in service class");
-            saveTemperature = new List<WeatherForecast>();
+            string upsyError = "unexpected error";
+            _logger.LogError(upsyError);
+            throw new MyKbcException(upsyError, e, "mykbc/call_SAVE_TEMP_DunnoWhatHappened");
         }
         return saveTemperature;
     }

@@ -18,15 +18,29 @@ public class MyExceptionFilter : ExceptionFilterAttribute //, IExceptionFilter
         _logger.LogError(
             $"Following Exception thrown:{context.Exception.Message} ({context.Exception.GetType().ToString()})");
         
-        MyKbcException myKbcException = (MyKbcException)context.Exception;
-        
-        context.Result = new ObjectResult(new ProblemDetails
+        MyKbcException myKbcException = context.Exception as MyKbcException;
+        if (myKbcException != null)
         {
-            Title = context.Exception.Message,
-            Status = 418,
-            Type = context.Exception.GetType().ToString(),
-            Instance = myKbcException.Uri,
-            Detail = myKbcException.InnerException?.ToString(),
-        });
+            context.Result = new ObjectResult(new ProblemDetails
+            {
+                Title = context.Exception.Message,
+                Status = 418,
+                Type = context.Exception.GetType().ToString(),
+                Instance = myKbcException.Uri,
+                Detail = myKbcException.InnerException?.ToString(),
+            });    
+        }
+        else
+        {
+            context.Result = new ObjectResult(new ProblemDetails
+            {
+                Title = context.Exception.Message,
+                Status = 418,
+                Type = context.Exception.GetType().ToString(),
+                Instance = "mykbc/unknown",
+                Detail = context.Exception.ToString(),
+            });    
+        }
+        
     }
 }
