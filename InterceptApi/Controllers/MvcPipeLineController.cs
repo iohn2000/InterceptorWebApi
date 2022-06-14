@@ -1,10 +1,11 @@
-﻿using InterceptApi.Filters;
+using InterceptApi.Filters;
 using InterceptApi.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InterceptApi.Controllers;
 /*
  // filter here is added on a per controller (for all actions in controller) basis as Attribute, also works before single actions functions!
+ // https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-6.0#dependency-injection
 [ServiceFilter(typeof(MyExceptionFilter))]
 [ServiceFilter(typeof(MyControllerLoggingFilter))] 
 */
