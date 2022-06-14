@@ -34,6 +34,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<MyControllerLoggingFilter>();
 builder.Services.AddScoped<MyExceptionFilter>();
 
+// https://developpaper.com/asp-net-mvc-core-pipeline-and-interceptor/
 builder.Services.AddControllers(s =>
 {
     s.Filters.Add(typeof(MyExceptionFilter)); // exception filter here is added to all controllers and all actions
@@ -58,6 +59,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
+// https://stackoverflow.com/questions/60610580/net-core-default-dependency-injection-with-castle-dynamicproxy
 public static class ServicesExtensions
 {
     public static void AddProxiedScoped<TInterface, TImplementation>(this IServiceCollection services)
